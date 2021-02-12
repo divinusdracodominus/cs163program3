@@ -90,14 +90,6 @@ namespace adt {
                 }
                 return dequeue_priv(first->next, dest, idx+1);
             }
-            /*int insert(Node*& head, T& data, int idx) {
-                if(head == nullptr) {
-                    head = new Node(data);
-                    head->next = nullptr;
-                    return idx;
-                }
-                return insert(head->next, data, idx+1);
-            }*/
             Node* head;
     };
 
@@ -156,14 +148,23 @@ namespace adt {
                 this->array = new Node*[arr_len]();
             }
             int insert(K& key, V& value) {
-                uintptr_t hash_val = key.hash();
-                uintptr_t index = hash_val > this->array_len ? (hash_val % this->array_len) : hash_val;
-                return Node::insert(this->array[index], key, value, 0);
+                uintptr_t index = key.hash() % this->array_len;
+                if(this->array[index] == nullptr){
+                    
+                    this->array[index] = new Node(key, value);
+                    this->array[index]->next = nullptr;
+                    return 0;
+                }
+                
+                Node* next = this->array[index];
+                this->array[index] = new Node(key, value);
+                this->array[index]->next = next;
+                return 0;
             }
 
             bool get(K& key, V& dest) {
-                uintptr_t hash_val = key.hash();
-                uintptr_t index = hash_val > this->array_len ? (hash_val % this->array_len) : hash_val;
+                uintptr_t index = key.hash() % this->array_len;
+                //uintptr_t index = hash_val > this->array_len ? (hash_val % this->array_len) : hash_val;
                 return Node::get(this->array[index], key, dest);
             }
         private:

@@ -59,10 +59,11 @@ CppString CppString::random(uintptr_t length) {
     CppString retval;
     const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     const size_t max_index = strlen(charset)-1;
-    retval.contents = Vector<char>(length, length);
+    retval.contents = Vector<char>(length+1, length+1);
     for(uintptr_t i = 0; i < length; i++){
         retval.contents[i] = charset[ rand() % max_index ];
     };
+    retval.contents[length] = '\0';
     return retval;
 }
 
