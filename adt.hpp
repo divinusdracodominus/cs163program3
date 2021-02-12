@@ -129,7 +129,7 @@ namespace adt {
                         }
                         return insert(head->next, key, value, idx+1);
                     }
-                    static bool get(Node*& head, K& k, V& dest) {
+                    static bool get(Node* head, K& k, V& dest) {
                         if(head == nullptr) {
                             return false;
                         }

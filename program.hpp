@@ -21,7 +21,8 @@ struct Address {
 struct Animal {
         Animal() {}
         Animal(adt::CppString& name, adt::CppString& breed, Address& location, adt::CppString& description, adt::CppString& link);
-        Animal(adt::CppString name, adt::CppString breed, Address location, adt::CppString description, adt::CppString link);
+        void display();
+        //Animal(adt::CppString name, adt::CppString breed, Address location, adt::CppString description, adt::CppString link);
         Animal(const Animal&) = delete;
         //operator=(const Animal&) = default;
     private:
