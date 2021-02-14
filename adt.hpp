@@ -22,9 +22,10 @@ namespace adt {
 
             friend std::ostream& operator<<(std::ostream& os, const CppString& value);
             friend std::istream& operator>> (std::istream& is, CppString& str);
-            bool operator !=(CppString& str1);
-            bool operator ==(CppString& str2);
-            virtual uintptr_t hash();
+            bool operator !=(CppString& str1) const;
+            bool operator ==(CppString& str2) const;
+            bool operator ==(const CppString& str2) const;
+            virtual uintptr_t hash() const;
         private:
             Vector<char> contents;
     };
@@ -236,6 +237,19 @@ namespace adt {
             Node* head;
     };
 
+    template<typename T> struct UnsizedTree {
+        private:
+            struct Node {
+                Node* left;
+                Node* right;
+                T value;
+            };
+        public:
+
+        private:
+            Node* root;
+    };
+
     template<typename K, typename V> struct HashTable {
         static_assert(std::is_base_of<Hash, K>::value, "K must inherit from Hash");
             private:
@@ -274,6 +288,15 @@ namespace adt {
                         }
                         return get(head->next, k, dest);
                     }
+                    static ItemState<const V> get_ref(Node* head, const K& k) {
+                        if(head == nullptr) {
+                            return ItemState<const V>();
+                        }
+                        if(k == head->key) {
+                            return ItemState<const V>(head->value);
+                        }
+                        return get_ref(head->next, k);
+                    }
                 };
         public:
             ~HashTable(){
@@ -309,6 +332,10 @@ namespace adt {
                 uintptr_t index = key.hash() % this->array_len;
                 //uintptr_t index = hash_val > this->array_len ? (hash_val % this->array_len) : hash_val;
                 return Node::get(this->array[index], key, dest);
+            }
+            ItemState<const V> operator[](const K& key){
+                uintptr_t index = key.hash() % this->array_len;
+                return Node::get_ref(this->array[index], key);
             }
         private:
             /// I might switch to using Queues

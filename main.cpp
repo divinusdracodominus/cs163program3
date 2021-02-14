@@ -22,18 +22,20 @@ void better_test() {
     for(int t = 0; t < 10; t++){
         std::thread obj([&table, &keys]() {
             mutex thdlocker;
-            for(int i = 0; i < 100000; i++){
+            for(int i = 0; i < 1000; i++){
                 CppString street = CppString::random(rand() % 20);
                 CppString city = CppString::random(rand() % 20);
                 CppString state = CppString::random(rand() % 20);
+                CppString country = CppString::random(rand() % 20);
                 int zip_code = rand() % 99950;
-                Address addr(street, city, state, zip_code);
+                Address addr(street, city, state, country, zip_code);
                 /// it could be fun to read breeds, names, etc from an external data file
                 CppString name = CppString::random(rand() % 20);
                 CppString breed = CppString::random(rand() % 20);
+                CppString species = CppString::random(rand() % 20);
                 CppString desc = CppString::random(rand() % 40);
                 CppString link = CppString::random(rand() % 30);
-                Animal subject(name, breed, addr, desc, link);
+                Animal subject(name, breed, species, addr, desc, link);
                 CppString key = name + breed;
                 thdlocker.lock();
                 if(zip_code > 1000){
@@ -49,10 +51,10 @@ void better_test() {
     int value = keys.dequeue(search_key);
     while(value > 0) {
         Animal back;
-        if(table.get(search_key, back)) {
-            //back.display();
-        }else{
-            cout << "failed to get match" << endl;
+        try {
+            table[search_key].unwrap().display();
+        } catch (exception e) {
+            cout << "failed to get value";
         }
         value = keys.dequeue(search_key);
     }
@@ -72,39 +74,6 @@ void test_queue() {
         }else{
             cout << "queue is void" << endl;
         }
-    }
-}
-
-void test_table() {
-    HashTable<CppString, Animal> table(2000);
-    Queue<CppString> keys;
-    for(int i = 0; i < 10000; i++){
-        CppString street = CppString::random(rand() % 20);
-        CppString city = CppString::random(rand() % 20);
-        CppString state = CppString::random(rand() % 20);
-        int zip_code = rand() % 99950;
-        Address addr(street, city, state, zip_code);
-        /// it could be fun to read breeds, names, etc from an external data file
-        CppString name = CppString::random(rand() % 20);
-        CppString breed = CppString::random(rand() % 20);
-        CppString desc = CppString::random(rand() % 40);
-        CppString link = CppString::random(rand() % 30);
-        Animal subject(name, breed, addr, desc, link);
-        CppString key = name + breed;
-        keys.enqueue(key);
-        table.insert(key, subject);
-    }
-
-    CppString search_key;
-    int value = keys.dequeue(search_key);
-    while(value > 0) {
-        Animal back;
-        if(table.get(search_key, back)) {
-            back.display();
-        }else{
-            cout << "failed to get match" << endl;
-        }
-        value = keys.dequeue(search_key);
     }
 }
 

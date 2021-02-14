@@ -27,7 +27,7 @@ const char* get_message(uintptr_t, uintptr_t);
 namespace adt {
     class Hash {
         public:
-            virtual uintptr_t hash() {
+            virtual uintptr_t hash() const {
                 return 0;
             }
     };
@@ -76,9 +76,9 @@ namespace adt {
                 this->full = state.full;
             }
             ~ItemState(){}
-            ItemState(T value){
+            ItemState(T& value){
                 this->tag = Tag::Full;
-                this->full = value;
+                this->full = &value;
             }
             bool operator ==(const ItemState<T>& str2){
                 if(this->tag == str2.tag && this->tag == Tag::Empty) {
@@ -92,11 +92,11 @@ namespace adt {
                 return false;
             }
 
-            T unwrap() {
+            T& unwrap() {
                 if(this->tag == Tag::Empty){
                     throw nullvalue("attempted to call unwrap on an empty value");
                 }
-                return this->full;
+                return *this->full;
             }
 
             template<typename A> A map_or_else(A (*on_failure)(), A (*on_success)(T&)){
@@ -108,9 +108,7 @@ namespace adt {
             }
         private:
             Tag tag;
-            union {
-                T full;
-            };
+            T* full;
     };
 
     /// I use classes her because I don't need to linker/cbindgen to be able to tell if the rust version of the type exists

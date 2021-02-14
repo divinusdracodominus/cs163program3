@@ -25,7 +25,7 @@ std::istream& operator>> (std::istream& is, CppString& str) {
     return is;
 }
 
-bool CppString::operator !=(CppString& str2){
+bool CppString::operator !=(CppString& str2) const {
     if(this->contents.length() != str2.contents.length()) {
         return true;
     }
@@ -36,7 +36,7 @@ bool CppString::operator !=(CppString& str2){
     }
     return false;
 }
-bool CppString::operator ==(CppString& str2){
+bool CppString::operator ==(CppString& str2) const{
     return !(*this != str2);
 }
 
@@ -46,7 +46,7 @@ CppString CppString::operator+(uintptr_t num) const {
     return *this + CppString((const char*)buffer);
 }
 
-uintptr_t CppString::hash() {
+uintptr_t CppString::hash() const {
     uintptr_t retval = 1;
     for(uintptr_t i = 0; i < this->contents.length(); i++){
         retval += this->contents[i];

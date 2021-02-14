@@ -1,0 +1,4 @@
+1cb16c3 going to try and switch vector from using unique_ptr, to using its own move constructor
+997069a seems to be working well, will try with crushing data load soon
+50ba15e added testing functions, same memory issues
+83042d3 mostly working, but when run with a lot of data memory leaks happen
