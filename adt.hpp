@@ -31,6 +31,149 @@ namespace adt {
 }
 namespace adt {
 
+    template<typename T> struct DLLQueue {
+        private:
+            struct Node {
+                Node(T& d) {
+                    this->data = d;
+                }
+                T data;
+                Node* next;
+                Node* prev;
+            };
+        public:
+            DLLQueue() { this->head = nullptr; this->tail = nullptr; }
+            DLLQueue(const DLLQueue<T>&) = delete;
+            void operator=(const DLLQueue<T>&) = delete;
+            int enqueue(T& data) {
+                if(this->head == nullptr){
+                    
+                    this->head = new Node(data);
+                    this->head->next = nullptr;
+                    this->head->prev = nullptr;
+                    this->tail = head;
+                    return 0;
+                }
+                
+                Node* next = head;
+                head = new Node(data);
+                head->next = next;
+                head->next->prev = head;
+                return 0;
+            }
+
+            int dequeue(T& dest) {
+                if(head == nullptr) {
+                    return -1;
+                }
+                if(tail == nullptr){
+                    return -1;
+                }
+                Node* prev = this->tail->prev;
+                dest = this->tail->data;
+                delete tail;
+                this->tail = prev;
+                return 1;
+                //return dequeue_priv(head, dest, 0);
+            }
+            ~DLLQueue() {
+                if(head != nullptr && tail != nullptr){
+                    destroy(head);
+                }
+            }
+
+        private:
+            void destroy(Node* first) {
+                if(first == nullptr) { return; }
+                if(first->next == nullptr){
+                    delete first;
+                    first = nullptr;
+                    return;
+                }
+                Node* next = first->next;
+                delete first;
+                first = nullptr;
+                return destroy(next);
+            }
+            Node* head;
+            Node* tail;
+    };
+
+    template<typename T> struct CLLQueue {
+        private:
+            struct Node {
+                Node(T& d) {
+                    this->data = d;
+                }
+                T data;
+                Node* next;
+            };
+        public:
+            CLLQueue() { this->rear = nullptr; }
+            CLLQueue(const DLLQueue<T>&) = delete;
+            void operator=(const DLLQueue<T>&) = delete;
+            int enqueue(T& data) {
+                if(this->rear == nullptr){
+                    
+                    this->rear = new Node(data);
+                    this->rear->next = this->rear;
+                    return 1;
+                }
+                Node* begining = this->rear->next;
+                this->rear->next = new Node(data);
+                this->rear = this->rear->next;
+                this->rear->next = begining;
+                return 1;
+            }
+
+            int dequeue(T& dest) {
+                if(this->rear == nullptr) {
+                    return -1;
+                }
+                if(this->rear->next == this->rear){
+                    dest = this->rear->data;
+                    delete this->rear;
+                    this->rear = nullptr;
+                    return 1;
+                }
+                dest = this->rear->next->data;
+                Node* second = this->rear->next->next;
+                delete this->rear->next;
+                this->rear->next = second;
+                return 1;
+                //return dequeue_priv(head, dest, 0);
+            }
+            ~CLLQueue() {
+                if(rear != nullptr){
+                    destroy(this->rear->next);
+                }
+            }
+
+        private:
+            void destroy(Node* first) {
+                if(first == nullptr) { return; }
+                if(first->next == this->rear){
+                    delete first;
+                    first = nullptr;
+                    return;
+                }
+                Node* next = first->next;
+                delete first;
+                first = nullptr;
+                return destroy(next);
+            }
+            int dequeue_priv(Node*& first, T& dest, int idx) {
+                if(first->next == nullptr){
+                    dest = first->data;
+                    delete first;
+                    first = nullptr;
+                    return idx;
+                }
+                return dequeue_priv(first->next, dest, idx+1);
+            }
+            Node* rear;
+    };
+
     template<typename T> struct Queue {
         private:
             struct Node {
